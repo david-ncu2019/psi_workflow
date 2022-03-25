@@ -207,7 +207,7 @@ def Modify_RAS2PTATT_Shapefile(ortho_list, shapefile_filepath, use_ortho_list=Tr
     geo_data = gpd.GeoDataFrame(data=_dict, crs=outProj, geometry=geom_column)
     return geo_data
 
-def INSAR_GPS_CDIS_Table_Export(insar_shapefile, gps_folder, GPS_value_colname='hgt(m)'):
+def INSAR_GPS_CDIS_Table_Export(insar_shapefile, gps_folder, GPS_value_colname='hgt(m)', first_pair_interval=12):
     """
     Purpose:
     ♦ Export Table containing InSAR-derived Average & StDev CDIS of PSCs within xyz (meters) of a GPS stations
@@ -301,7 +301,7 @@ def INSAR_GPS_CDIS_Table_Export(insar_shapefile, gps_folder, GPS_value_colname='
     # Từ bảng dữ liệu đã được chuyển đổi này, ta lấy ra được time series của insar
     # time series này được dùng để tìm dữ liệu GPS vào ngày tương ứng
     insar_time_series = transposed_insar_average_cdis.index.tolist()
-    insar_initial_date = insar_time_series[0] - relativedelta(days=12)
+    insar_initial_date = insar_time_series[0] - relativedelta(days=first_pair_interval)
     insar_time_series.insert(0, insar_initial_date)
     insar_last_date = insar_time_series[-1]
 
@@ -609,7 +609,7 @@ def InSAR_GPS_Plot(station, insar, gps, mae=0, rmse=0, fit='yes'):
     insar_polyfit_array = insar_slope*np.arange(1, len(insar_cdis_array)+1) + insar_intercept
     
     # plot insar cumulative displacment
-    ax.plot(insar_cdis_array, marker='^', markersize=12, color='orange', linewidth=2.5, linestyle='-', alpha=1, markevery=12, label='InSAR')
+    ax.plot(insar_cdis_array, marker='^', markersize=12, color='orange', linewidth=2.5, linestyle='-', alpha=1, markevery=6, label='InSAR')
         
     if plot_fit_line in ['yes', 'y', 'YES', 'Y']:
         ax.plot(insar_cdis_array.index, insar_polyfit_array, marker=None, color='black', linewidth=2.5,  alpha=1, label='InSAR Fit')
